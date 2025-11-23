@@ -5,6 +5,8 @@ import Header from "@/components/dashboard/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Download, TrendingUp, TrendingDown, DollarSign, FileText, AlertCircle, ChevronRight, Lightbulb, Calendar, Target } from "lucide-react"
 import { motion } from "framer-motion"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { useEffect, useState } from "react"
 
 export default function FinancialsPage() {
@@ -123,7 +125,26 @@ export default function FinancialsPage() {
               <CardContent>
                 <motion.div className="space-y-4" initial="hidden" whileInView="show" viewport={{ once: true }} variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}>
                   {caSummary && (
-                    <div className="p-4 bg-muted rounded-xl border border-border-subtle text-sm">{caSummary}</div>
+                    <div className="p-4 bg-muted rounded-xl border border-border-subtle text-sm">
+                      <div className="prose prose-invert max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}
+                          components={{
+                            h1: ({ children }) => <h1 className="text-xl font-semibold mb-2">{children}</h1>,
+                            h2: ({ children }) => <h2 className="text-lg font-semibold mt-3 mb-2">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-base font-semibold mt-3 mb-2">{children}</h3>,
+                            p: ({ children }) => <p className="leading-relaxed mb-2">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 mb-2">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 mb-2">{children}</ol>,
+                            li: ({ children }) => <li>{children}</li>,
+                            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                            hr: () => <hr className="my-3 border-border-subtle" />,
+                            code: ({ children }) => <code className="px-1 py-0.5 rounded bg-background/50">{children}</code>,
+                          }}
+                        >
+                          {caSummary}
+                        </ReactMarkdown>
+                      </div>
+                    </div>
                   )}
                   <div className="p-4 bg-muted rounded-xl border border-border-subtle">
                     <div className="flex items-start gap-3">
@@ -172,7 +193,26 @@ export default function FinancialsPage() {
                   </div>
                   <div className="space-y-2">
                     {taxAdvice && (
-                      <div className="p-3 bg-background rounded-lg border border-border-subtle text-sm whitespace-pre-wrap">{taxAdvice}</div>
+                      <div className="p-3 bg-background rounded-lg border border-border-subtle text-sm">
+                        <div className="prose max-w-none">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}
+                            components={{
+                              h1: ({ children }) => <h1 className="text-xl font-semibold mb-2">{children}</h1>,
+                              h2: ({ children }) => <h2 className="text-lg font-semibold mt-3 mb-2">{children}</h2>,
+                              h3: ({ children }) => <h3 className="text-base font-semibold mt-3 mb-2">{children}</h3>,
+                              p: ({ children }) => <p className="leading-relaxed mb-2">{children}</p>,
+                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 mb-2">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 mb-2">{children}</ol>,
+                              li: ({ children }) => <li>{children}</li>,
+                              strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                              hr: () => <hr className="my-3 border-border-subtle" />,
+                              code: ({ children }) => <code className="px-1 py-0.5 rounded bg-muted">{children}</code>,
+                            }}
+                          >
+                            {taxAdvice}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
                     )}
                     <div className="p-3 bg-background rounded-lg border border-border-subtle">
                       <div className="text-sm font-medium mb-1 flex items-center gap-2"><Lightbulb className="w-4 h-4 text-accent-primary" /> Deduction Opportunity</div>

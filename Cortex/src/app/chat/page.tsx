@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import Sidebar from "@/components/dashboard/Sidebar"
 import Header from "@/components/dashboard/Header"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,7 +11,20 @@ import { Send, Paperclip, Download, Bot, BarChart3, Package } from "lucide-react
 export default function ChatPage() {
   const [message, setMessage] = useState("")
   const [dynamic, setDynamic] = useState<{ role: "user" | "assistant"; content: string; timestamp: string }[]>([])
+  const sendQuery = async (query: string) => {
+    const ts = new Date().toLocaleTimeString()
+    setDynamic(prev => [...prev, { role: "user", content: query, timestamp: ts }])
+    try {
+      const res = await fetch("/ai/chatbot", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ query }) })
+      const data = await res.json()
+      const text = typeof data?.response === "string" ? data.response : JSON.stringify(data)
+      setDynamic(prev => [...prev, { role: "assistant", content: text, timestamp: new Date().toLocaleTimeString() }])
+    } catch {
+      setDynamic(prev => [...prev, { role: "assistant", content: "Error contacting AI backend", timestamp: new Date().toLocaleTimeString() }])
+    }
+  }
   const send = async () => {
+    if (!message.trim()) return
     const ts = new Date().toLocaleTimeString()
     setDynamic(prev => [...prev, { role: "user", content: message, timestamp: ts }])
     try {
@@ -85,7 +100,28 @@ export default function ChatPage() {
                         ? "bg-foreground text-background" 
                         : "bg-muted text-text-primary"
                     }`}>
-                      <div className="text-sm whitespace-pre-line">{msg.content}</div>
+                      {msg.role === "assistant" ? (
+                        <div className="prose prose-invert max-w-none text-sm">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}
+                            components={{
+                              h1: ({ children }) => <h1 className="text-xl font-semibold mb-2">{children}</h1>,
+                              h2: ({ children }) => <h2 className="text-lg font-semibold mt-3 mb-2">{children}</h2>,
+                              h3: ({ children }) => <h3 className="text-base font-semibold mt-3 mb-2">{children}</h3>,
+                              p: ({ children }) => <p className="leading-relaxed mb-2">{children}</p>,
+                              ul: ({ children }) => <ul className="list-disc pl-5 space-y-1 mb-2">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal pl-5 space-y-1 mb-2">{children}</ol>,
+                              li: ({ children }) => <li className="">{children}</li>,
+                              strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                              hr: () => <hr className="my-3 border-border-subtle" />,
+                              code: ({ children }) => <code className="px-1 py-0.5 rounded bg-background/50">{children}</code>,
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
+                      ) : (
+                        <div className="text-sm whitespace-pre-line">{msg.content}</div>
+                      )}
                       <div className={`text-xs mt-2 ${msg.role === "user" ? "text-background/70" : "text-text-secondary"}`}>
                         {msg.timestamp}
                       </div>
@@ -115,6 +151,7 @@ export default function ChatPage() {
                   type="text"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") send() }}
                   placeholder="Ask me anything about your business..."
                   className="flex-1 px-4 py-3 bg-background border border-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-ring text-sm"
                 />
@@ -126,16 +163,16 @@ export default function ChatPage() {
               
               {/* Quick Actions */}
               <div className="flex gap-2 mt-3 flex-wrap">
-                <button className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
+                <button onClick={() => sendQuery("Show revenue trends for the last 30 days")} className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
                   Show revenue trends
                 </button>
-                <button className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
+                <button onClick={() => sendQuery("List low-stock items and restock recommendations")} className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
                   List low-stock items
                 </button>
-                <button className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
+                <button onClick={() => sendQuery("Show top customers this month with order counts and revenue")} className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
                   Top customers this month
                 </button>
-                <button className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
+                <button onClick={() => sendQuery("Run competitor price analysis for SKU P001")} className="px-3 py-1.5 bg-muted hover:opacity-90 rounded-lg text-xs font-medium text-text-primary transition-colors">
                   Competitor price analysis
                 </button>
                 <button className="p-1.5 hover:bg-muted rounded-lg transition-colors" title="Export Conversation">
