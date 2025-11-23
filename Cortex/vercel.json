@@ -1,0 +1,5 @@
+{
+  "env": {
+    "BACKEND_BASE_URL": "https://cortex-v2ee.onrender.com"
+  }
+}
