@@ -1,6 +1,6 @@
 # Cortex
 
-A production-ready AI-powered e‑commerce operations and growth assistant. The application provides a conversational interface and financial insights, with clean Markdown rendering for readable outputs.
+A production-ready AI-powered e‑commerce operations and growth assistant. The application provides a conversational interface and financial insights, with clean Markdown rendering for readable outputs...
 
 - Official URL: https://cortex-projects.vercel.app
 - Frontend: Next.js (App Router) in `Cortex/`
