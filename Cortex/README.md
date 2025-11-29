@@ -1,4 +1,4 @@
-# Cortex — AI-Powered E‑Commerce Operations Hub
+# Cortex — AI-Powered E‑Commerce Operations Hub.
 
 Cortex is an AI-powered operations hub for e‑commerce businesses. It integrates with any store backend to automate and orchestrate core business workflows across sales management, financials and compliance, inventory, competitors, growth analytics, customer management, and invoicing. A GenAI assistant surfaces insights and actions in a unified dashboard.
 
